@@ -2,7 +2,7 @@ import requests
 import json
 
 
-class p2pParse():
+class ParseP2P():
 
     def getBybitPrices(self, type="buy", size="20", token="USDT", currency="RUB"):
         dataRequest = {
@@ -96,6 +96,36 @@ class p2pParse():
                 'payTypeCode']  # только первый метод оплаты, надо фиксить, чтобы были все
             currSellData['makerOrdersNum'] = data['dealOrderNum']
             currSellData['makerOrdersRate'] = data['dealOrderRate']
+            resultData.append(currSellData.copy())
+        return resultData
+
+    def getHuobiPrices(self, type="buy", token="USDT", currency="RUB"): # buy и sell реверсивные, тут для мейкера указывается
+        # Нужен список монет и валют
+        data = {
+            "coinId": 2,
+            "currency": 11,
+            "tradeType": type,
+            "currPage": 1,
+            "payMethod": 0,
+            "acceptOrder": 0,
+            "blockType": "general",
+            "online": 1,
+            "onlyTradable": "false",
+            "isFollowed": "false"
+        }
+        result = requests.get("https://www.htx.com/-/x/otc/v1/data/trade-market", params=data)
+        result = json.loads(result.text)
+        currSellData = {}
+        resultData = []
+        for data in result['data']:
+            currSellData['price'] = data['price']
+            currSellData['currency'] = "RUB"
+            currSellData['minAmount'] = data['minTradeLimit']
+            currSellData['maxAmount'] = data['maxTradeLimit']
+            currSellData['initAmount'] = data['tradeCount']
+            currSellData['payments'] = data['payMethods'][0]['name']  # только первый метод оплаты, надо фиксить, чтобы были все
+            currSellData['makerOrdersNum'] = data['tradeMonthTimes']
+            currSellData['makerOrdersRate'] = data['orderCompleteRate']
             resultData.append(currSellData.copy())
         return resultData
 
