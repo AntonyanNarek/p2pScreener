@@ -25,6 +25,7 @@ class ParseP2P():
         currSellData = {}
         resultData = []
         for data in result['result']['items']:
+            currSellData['name'] = "Bybit"
             currSellData['price'] = data['price']
             currSellData['currency'] = data['currencyId']
             currSellData['minAmount'] = data['minAmount']
@@ -57,6 +58,7 @@ class ParseP2P():
         currSellData = {}
         resultData = []
         for data in result['data']:
+            currSellData['name'] = "Commex"
             currSellData['price'] = data['adDetailResp']['price']
             currSellData['currency'] = data['adDetailResp']['fiatCurrency']
             currSellData['minAmount'] = data['adDetailResp']['minSingleTransAmount']
@@ -87,6 +89,7 @@ class ParseP2P():
         currSellData = {}
         resultData = []
         for data in result['items']:
+            currSellData['name'] = "Kucoin"
             currSellData['price'] = data['premium']
             currSellData['currency'] = data['legal']
             currSellData['minAmount'] = data['limitMinQuote']
@@ -118,6 +121,7 @@ class ParseP2P():
         currSellData = {}
         resultData = []
         for data in result['data']:
+            currSellData['name'] = "Huobi"
             currSellData['price'] = data['price']
             currSellData['currency'] = "RUB"
             currSellData['minAmount'] = data['minTradeLimit']
@@ -128,6 +132,24 @@ class ParseP2P():
             currSellData['makerOrdersRate'] = data['orderCompleteRate']
             resultData.append(currSellData.copy())
         return resultData
+
+
+    def findArbitrage(self):
+        def get_data(data):
+            return data['price']
+
+        bybitBuy = self.getBybitPrices(type="buy")
+        bybitSell = self.getBybitPrices(type="sell")
+        commexBuy = self.getCommexPrices(type="buy")
+        commexSell = self.getCommexPrices(type="sell")
+        kucoinBuy = self.getKucoinPrices(type="buy")
+        kucoinSell = self.getKucoinPrices(type="sell")
+        huobiBuy = self.getHuobiPrices(type="sell")
+        huobiSell = self.getHuobiPrices(type="buy")
+        listBuy = list(bybitBuy + commexBuy + kucoinBuy + huobiBuy)
+        listSell = list(bybitSell + commexSell + kucoinSell + huobiSell)
+        print(min(listBuy, key=get_data))
+        print(max(listSell, key=get_data))
 
     def printData(self, resultData):
         for data in resultData:
