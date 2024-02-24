@@ -20,6 +20,9 @@ class ParseP2P():
         if type == "sell":
             dataRequest['side'] = "0"
 
+        with open('payListBybit.json') as f:
+            payList = json.load(f)
+
         result = requests.post("https://api2.bybit.com/fiat/otc/item/online", json=dataRequest)
         result = json.loads(result.text)
         currSellData = {}
@@ -31,7 +34,7 @@ class ParseP2P():
             currSellData['minAmount'] = data['minAmount']
             currSellData['maxAmount'] = data['maxAmount']
             currSellData['initAmount'] = data['lastQuantity']
-            currSellData['payments'] = data['payments'][0] # только первый метод оплаты, надо фиксить, чтобы были все
+            currSellData['payments'] = [payList[i] for i in data['payments']]
             currSellData['makerOrdersNum'] = data['recentOrderNum']
             currSellData['makerOrdersRate'] = data['recentExecuteRate']
             resultData.append(currSellData.copy())
@@ -64,8 +67,7 @@ class ParseP2P():
             currSellData['minAmount'] = data['adDetailResp']['minSingleTransAmount']
             currSellData['maxAmount'] = data['adDetailResp']['maxSingleTransAmount']
             currSellData['initAmount'] = data['adDetailResp']['remainingAmount']
-            currSellData['payments'] = data['adDetailResp']['tradeMethods'][0][
-                'tradeMethodName']  # только первый метод оплаты, надо фиксить, чтобы были все
+            currSellData['payments'] = [i['tradeMethodName'] for i in data['adDetailResp']['tradeMethods']]
             currSellData['makerOrdersNum'] = data['advertiserVo']['userStatsRet']['completedOrderNum']
             currSellData['makerOrdersRate'] = round(data['advertiserVo']['userStatsRet']['finishRate'], 2)
             resultData.append(currSellData.copy())
@@ -95,8 +97,7 @@ class ParseP2P():
             currSellData['minAmount'] = data['limitMinQuote']
             currSellData['maxAmount'] = data['limitMaxQuote']
             currSellData['initAmount'] = data['currencyBalanceQuantity']
-            currSellData['payments'] = data['adPayTypes'][0][
-                'payTypeCode']  # только первый метод оплаты, надо фиксить, чтобы были все
+            currSellData['payments'] = [i['payTypeCode'] for i in data['adPayTypes']]
             currSellData['makerOrdersNum'] = data['dealOrderNum']
             currSellData['makerOrdersRate'] = data['dealOrderRate']
             resultData.append(currSellData.copy())
@@ -127,7 +128,7 @@ class ParseP2P():
             currSellData['minAmount'] = data['minTradeLimit']
             currSellData['maxAmount'] = data['maxTradeLimit']
             currSellData['initAmount'] = data['tradeCount']
-            currSellData['payments'] = data['payMethods'][0]['name']  # только первый метод оплаты, надо фиксить, чтобы были все
+            currSellData['payments'] = [i['name'] for i in data['payMethods']]
             currSellData['makerOrdersNum'] = data['tradeMonthTimes']
             currSellData['makerOrdersRate'] = data['orderCompleteRate']
             resultData.append(currSellData.copy())
