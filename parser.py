@@ -142,14 +142,16 @@ class ParseP2P():
         bybitSell = self.getBybitPrices(type="sell")
         commexBuy = self.getCommexPrices(type="buy")
         commexSell = self.getCommexPrices(type="sell")
-        kucoinBuy = self.getKucoinPrices(type="buy")
-        kucoinSell = self.getKucoinPrices(type="sell")
+        kucoinBuy = self.getKucoinPrices(type="sell")
+        kucoinSell = self.getKucoinPrices(type="buy")
         huobiBuy = self.getHuobiPrices(type="sell")
         huobiSell = self.getHuobiPrices(type="buy")
         listBuy = list(bybitBuy + commexBuy + kucoinBuy + huobiBuy)
         listSell = list(bybitSell + commexSell + kucoinSell + huobiSell)
-        print(min(listBuy, key=get_data))
-        print(max(listSell, key=get_data))
+        print("BUY")
+        self.printData([min(listBuy, key=get_data)])
+        print("SELL")
+        self.printData([max(listSell, key=get_data)])
 
     def printData(self, resultData):
         for data in resultData:
