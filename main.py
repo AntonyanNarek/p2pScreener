@@ -13,11 +13,7 @@ parser = ParseP2P()
 class Request(BaseModel):
     currency: str
     coin: str
-    payMethod: List[str]
-    minValue: int
-    maxValue: int
     market: List[str]
-    security: bool
 
 @app.get("/orderbook/huobi")
 async def huobi():
