@@ -29,6 +29,7 @@ class ParseP2P():
         resultData = []
         for data in result['result']['items']:
             currSellData['name'] = "Bybit"
+            currSellData['nickName'] = data['nickName']
             currSellData['price'] = data['price']
             currSellData['currency'] = data['currencyId']
             currSellData['minAmount'] = data['minAmount']
@@ -42,15 +43,13 @@ class ParseP2P():
 
     def getCommexPrices(self, type="buy", size=20, token="USDT", currency="RUB"):
         dataRequest = {
-            "proMerchantAds": False,
             "page": 1,
             "rows": size,
             "payTypes": [],
             "countries": [],
-            "publisherType": None,
             "asset": token,
             "fiat": currency,
-            "tradeType": "BUY"
+            "tradeType": type
         }
 
         if type == "sell":
@@ -62,6 +61,7 @@ class ParseP2P():
         resultData = []
         for data in result['data']:
             currSellData['name'] = "Commex"
+            currSellData['nickName'] = data['advertiserVo']['nickName']
             currSellData['price'] = data['adDetailResp']['price']
             currSellData['currency'] = data['adDetailResp']['fiatCurrency']
             currSellData['minAmount'] = data['adDetailResp']['minSingleTransAmount']
@@ -92,6 +92,7 @@ class ParseP2P():
         resultData = []
         for data in result['items']:
             currSellData['name'] = "Kucoin"
+            currSellData['nickName'] = data['nickName']
             currSellData['price'] = data['premium']
             currSellData['currency'] = data['legal']
             currSellData['minAmount'] = data['limitMinQuote']
@@ -104,6 +105,10 @@ class ParseP2P():
         return resultData
 
     def getHuobiPrices(self, type="buy", token="USDT", currency="RUB"): # buy и sell реверсивные, тут для мейкера указывается
+        if type == "buy":
+            type = "sell"
+        elif type == "sell":
+            type = "buy"
         # Нужен список монет и валют
         data = {
             "coinId": 2,
@@ -123,6 +128,7 @@ class ParseP2P():
         resultData = []
         for data in result['data']:
             currSellData['name'] = "Huobi"
+            currSellData['nickName'] = data['userName']
             currSellData['price'] = data['price']
             currSellData['currency'] = "RUB"
             currSellData['minAmount'] = data['minTradeLimit']

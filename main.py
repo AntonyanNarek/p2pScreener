@@ -61,13 +61,14 @@ async def filter(request: Request):
 
 # Функция для асинхронного получения данных с биржи
 async def get_market_data(market_name, type, currency, coin):
-    if market_name.lower() == 'huobi':
-        return  parser.getHuobiPrices(type=type, currency=currency, token=coin)
-    elif market_name.lower() == 'bybit':
-        return  parser.getBybitPrices(type=type, currency=currency, token=coin)
-    elif market_name.lower() == 'kucoin':
-        return  parser.getKucoinPrices(type=type, currency=currency, token=coin)
-    elif market_name.lower() == 'commex':
-        return  parser.getCommexPrices(type=type, currency=currency, token=coin)
+    market_name = market_name.lower()
+    if market_name == 'huobi':
+        return parser.getHuobiPrices(type=type, currency=currency, token=coin)
+    elif market_name == 'bybit':
+        return parser.getBybitPrices(type=type, currency=currency, token=coin)
+    elif market_name == 'kucoin':
+        return parser.getKucoinPrices(type=type, currency=currency, token=coin)
+    elif market_name == 'commex':
+        return parser.getCommexPrices(type=type, currency=currency, token=coin)
     else:
         return f"Market '{market_name}' not found"
