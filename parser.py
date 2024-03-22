@@ -93,7 +93,7 @@ class ParseP2P():
         for data in result['items']:
             currSellData['name'] = "Kucoin"
             currSellData['nickName'] = data['nickName']
-            currSellData['price'] = data['premium']
+            currSellData['price'] = data['floatPrice']
             currSellData['currency'] = data['legal']
             currSellData['minAmount'] = data['limitMinQuote']
             currSellData['maxAmount'] = data['limitMaxQuote']
@@ -110,8 +110,13 @@ class ParseP2P():
         elif type == "sell":
             type = "buy"
         # Нужен список монет и валют
+        coinId = 2
+        if token == "BTC":
+            coinId = 1
+        elif token == "ETH":
+            coinId = 3
         data = {
-            "coinId": 2,
+            "coinId": coinId,
             "currency": 11,
             "tradeType": type,
             "currPage": 1,
