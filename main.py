@@ -1,14 +1,11 @@
-import asyncio
-from typing import List
-
 from fastapi import FastAPI
 from parser import ParseP2P
 from pydantic import BaseModel
-from fastapi import HTTPException
 
 app = FastAPI()
 
 parser = ParseP2P()
+
 
 class Request(BaseModel):
     currency: str
