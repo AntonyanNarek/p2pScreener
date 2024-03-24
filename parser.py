@@ -1,33 +1,39 @@
 import requests
 import json
 
-
 class ParseP2P():
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": "PostmanRuntime/7.28.2",
+        "Content-Type": "application/json",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+        "Accept": "*/*",
+        "Cache-Control": "no-cache"
+    })
 
-    def getBybitPrices(self, type="buy", size="20", token="USDT", currency="RUB"):
+    def getBybitPrices(self, type="buy", size="20", token="USDT", currency="RUB", session=session):
         dataRequest = {
-            "amount": "",
-            "authMaker": False,
-            "canTrade": False,
             "currencyId": currency,
             "page": "1",
-            "payment": [],
             "side": "1",
             "size": size,
-            "tokenId": token,
-            "userId": ""
+            "tokenId": token
         }
+        print("bybit" + type)
         if type == "sell":
             dataRequest['side'] = "0"
 
         with open('payListBybit.json') as f:
             payList = json.load(f)
 
-        result = requests.post("https://api2.bybit.com/fiat/otc/item/online", json=dataRequest)
+
+        result = session.post("https://api2.bybit.com/fiat/otc/item/online", json=dataRequest, )
         result = json.loads(result.text)
         currSellData = {}
         resultData = []
         for data in result['result']['items']:
+            print("iter")
             currSellData['name'] = "Bybit"
             currSellData['nickName'] = data['nickName']
             currSellData['price'] = data['price']
@@ -41,7 +47,7 @@ class ParseP2P():
             resultData.append(currSellData.copy())
         return resultData
 
-    def getCommexPrices(self, type="buy", size=20, token="USDT", currency="RUB"):
+    def getCommexPrices(self, type="buy", size=20, token="USDT", currency="RUB", session=session):
         dataRequest = {
             "page": 1,
             "rows": size,
@@ -55,7 +61,7 @@ class ParseP2P():
         if type == "sell":
             dataRequest['tradeType'] = "SELL"
 
-        result = requests.post("https://www.commex.com/bapi/c2c/v1/friendly/c2c/ad/search", json=dataRequest)
+        result = session.post("https://www.commex.com/bapi/c2c/v1/friendly/c2c/ad/search", json=dataRequest)
         result = json.loads(result.text)
         currSellData = {}
         resultData = []
@@ -73,7 +79,7 @@ class ParseP2P():
             resultData.append(currSellData.copy())
         return resultData
 
-    def getKucoinPrices(self, type="buy", size=20, token="USDT", currency="RUB"):
+    def getKucoinPrices(self, type="buy", size=20, token="USDT", currency="RUB", session=session):
         dataRequest = {
             "status": "PUTUP",
             "currency": token,
@@ -104,7 +110,7 @@ class ParseP2P():
             resultData.append(currSellData.copy())
         return resultData
 
-    def getHuobiPrices(self, type="buy", token="USDT", currency="RUB"): # buy и sell реверсивные, тут для мейкера указывается
+    def getHuobiPrices(self, type="buy", token="USDT", currency="RUB", session=session): # buy и sell реверсивные, тут для мейкера указывается
         if type == "buy":
             type = "sell"
         elif type == "sell":
@@ -127,7 +133,7 @@ class ParseP2P():
             "onlyTradable": "false",
             "isFollowed": "false"
         }
-        result = requests.get("https://www.htx.com/-/x/otc/v1/data/trade-market", params=data)
+        result = session.get("https://www.htx.com/-/x/otc/v1/data/trade-market", params=data)
         result = json.loads(result.text)
         currSellData = {}
         resultData = []

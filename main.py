@@ -13,7 +13,7 @@ parser = ParseP2P()
 class Request(BaseModel):
     currency: str
     coin: str
-    market: List[str]
+
 
 @app.get("/orderbook/huobi")
 async def huobi():
@@ -33,23 +33,11 @@ async def commex():
 
 @app.post("/orders/filter")
 async def filter(request: Request):
-    markets = request.market
-
-    if not markets or not isinstance(markets, list):
-        raise HTTPException(status_code=400, detail="Market should be a list")
-
-    # Создаем асинхронные задачи для "buy" и "sell"
-    buy_tasks = [get_market_data(market, "buy", request.currency, request.coin) for market in markets]
-    sell_tasks = [get_market_data(market, "sell", request.currency, request.coin) for market in markets]
-
-    # Выполняем задачи асинхронно
-    buy_results = await asyncio.gather(*buy_tasks)
-    sell_results = await asyncio.gather(*sell_tasks)
 
     # Объединяем результаты в один словарь
     # Создаем словари для "buy" и "sell"
-    buy_data = {market.lower(): result for market, result in zip(markets, buy_results)}
-    sell_data = {market.lower(): result for market, result in zip(markets, sell_results)}
+    buy_data = await get_market_data("buy", request.currency, request.coin)
+    sell_data = await get_market_data("sell", request.currency, request.coin)
 
     # Объединяем результаты в один словарь
     market_data = {
@@ -60,15 +48,10 @@ async def filter(request: Request):
     return market_data
 
 # Функция для асинхронного получения данных с биржи
-async def get_market_data(market_name, type, currency, coin):
-    market_name = market_name.lower()
-    if market_name == 'huobi':
-        return parser.getHuobiPrices(type=type, currency=currency, token=coin)
-    elif market_name == 'bybit':
-        return parser.getBybitPrices(type=type, currency=currency, token=coin)
-    elif market_name == 'kucoin':
-        return parser.getKucoinPrices(type=type, currency=currency, token=coin)
-    elif market_name == 'commex':
-        return parser.getCommexPrices(type=type, currency=currency, token=coin)
-    else:
-        return f"Market '{market_name}' not found"
+async def get_market_data(type, currency, coin):
+    data = {}
+    data['Huobi'] = parser.getHuobiPrices(type=type, currency=currency, token=coin)
+    data['Bybit'] = parser.getBybitPrices(type=type, currency=currency, token=coin)
+    data['Kucoin'] = parser.getKucoinPrices(type=type, currency=currency, token=coin)
+    data['Commex'] = parser.getCommexPrices(type=type, currency=currency, token=coin)
+    return data
