@@ -20,7 +20,6 @@ class ParseP2P():
             "size": size,
             "tokenId": token
         }
-        print("bybit" + type)
         if type == "sell":
             dataRequest['side'] = "0"
 
@@ -33,7 +32,6 @@ class ParseP2P():
         currSellData = {}
         resultData = []
         for data in result['result']['items']:
-            print("iter")
             currSellData['name'] = "Bybit"
             currSellData['nickName'] = data['nickName']
             currSellData['price'] = data['price']
